@@ -36,10 +36,8 @@ public abstract class FileManager {
     }
 
     public static void downloadAllMissingSounds(final OkHttpClient okHttpClient) {
-        // Get set of existing files in our dir - existing sounds will be skipped, unexpected files (not dirs, some sounds depending on config) will be deleted
         Set<String> filesPresent = getFilesPresent();
 
-        // Download any sounds that are not yet present but desired
         for (Sound sound : getDesiredSoundList()) {
             String fileNameToDownload = sound.getFileName();
             if (filesPresent.contains(fileNameToDownload)) {
@@ -48,32 +46,32 @@ public abstract class FileManager {
             }
 
             if (RAW_GITHUB == null) {
-                log.error("Clue Scroll Sounds could not download sounds due to an unexpected null RAW_GITHUB value");
+                log.error("Clue Scroll Notifier could not download sounds due to an unexpected null RAW_GITHUB value");
                 return;
             }
 
             HttpUrl soundUrl = RAW_GITHUB.newBuilder().addPathSegment(fileNameToDownload).build();
             Path outputPath = Paths.get(DOWNLOAD_DIR.getPath(), fileNameToDownload);
             try (Response res = okHttpClient.newCall(new Request.Builder().url(soundUrl).build()).execute()) {
-                if (res.body() != null)
+                if (res.body() != null) {
                     Files.copy(new BufferedInputStream(res.body().byteStream()), outputPath, StandardCopyOption.REPLACE_EXISTING);
+                }
             } catch (IOException e) {
-                log.error("Clue Scroll Sounds could not download sounds!", e);
-                return;
+                log.error("Clue Scroll Notifier could not download sound: " + fileNameToDownload, e);
             }
         }
 
         for (String filename : filesPresent) {
             File toDelete = new File(DOWNLOAD_DIR, filename);
-            //noinspection ResultOfMethodCallIgnored
             toDelete.delete();
         }
     }
 
     private static Set<String> getFilesPresent() {
         File[] downloadDirFiles = DOWNLOAD_DIR.listFiles();
-        if (downloadDirFiles == null || downloadDirFiles.length == 0)
+        if (downloadDirFiles == null || downloadDirFiles.length == 0) {
             return new HashSet<>();
+        }
 
         return Arrays.stream(downloadDirFiles)
                 .filter(file -> !file.isDirectory())

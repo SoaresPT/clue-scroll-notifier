@@ -6,21 +6,7 @@ import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.Range;
 
 @ConfigGroup("ClueScrollNotifier")
-public interface ClueScrollNotifierConfig extends Config
-{
-	@Range(
-			min = 0,
-			max = 200
-	)
-	@ConfigItem(
-			keyName = "announcementVolume",
-			name = "Sound volume",
-			description = "Adjust how loud the sounds are played.",
-			position = 1
-	)
-	default int announcementVolume() {
-		return 100;
-	}
+public interface ClueScrollNotifierConfig extends Config {
 
 	@ConfigItem(
 			keyName = "playSound",
@@ -30,6 +16,17 @@ public interface ClueScrollNotifierConfig extends Config
 	)
 	default boolean playSound() {
 		return true;
+	}
+
+	@Range(min = 0, max = 200)
+	@ConfigItem(
+			keyName = "announcementVolume",
+			name = "Sound volume",
+			description = "Adjust how loud the sounds are played.",
+			position = 1
+	)
+	default int announcementVolume() {
+		return 100;
 	}
 
 	@ConfigItem(

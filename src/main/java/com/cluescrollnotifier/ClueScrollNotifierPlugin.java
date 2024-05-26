@@ -17,10 +17,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @PluginDescriptor(
-		name = "Clue Scroll Sounds"
+		name = "Clue Scroll Notifier"
 )
-public class ClueScrollNotifierPlugin extends Plugin
-{
+public class ClueScrollNotifierPlugin extends Plugin {
+
 	@Inject
 	private Client client;
 
@@ -40,8 +40,7 @@ public class ClueScrollNotifierPlugin extends Plugin
 	private Notifier notifier;
 
 	@Override
-	protected void startUp() throws Exception
-	{
+	protected void startUp() throws Exception {
 		executor.submit(() -> {
 			FileManager.ensureDownloadDirectoryExists();
 			FileManager.downloadAllMissingSounds(okHttpClient);
@@ -51,8 +50,7 @@ public class ClueScrollNotifierPlugin extends Plugin
 	}
 
 	@Override
-	protected void shutDown() throws Exception
-	{
+	protected void shutDown() throws Exception {
 		soundEngine.close();
 		log.info("ClueScrollNotifier stopped!");
 	}
@@ -72,21 +70,19 @@ public class ClueScrollNotifierPlugin extends Plugin
 	private void playRandomClueScrollSound() {
 		int whichSound = ThreadLocalRandom.current().nextInt(1, 3);
 
-		switch(whichSound)
-		{
-			case(2):
-				log.info("Playing CASKET2 sound.");
-				soundEngine.playClip(Sound.CASKET2);
+		switch (whichSound) {
+			case 2:
+				log.info("Playing CLUE2 sound.");
+				soundEngine.playClip(Sound.CLUE2);
 				break;
 			default:
-				log.info("Playing default CASKET sound.");
-				soundEngine.playClip(Sound.CASKET);
+				log.info("Playing default CLUE sound.");
+				soundEngine.playClip(Sound.CLUE);
 		}
 	}
 
 	@Provides
-	ClueScrollNotifierConfig provideConfig(ConfigManager configManager)
-	{
+	ClueScrollNotifierConfig provideConfig(ConfigManager configManager) {
 		return configManager.getConfig(ClueScrollNotifierConfig.class);
 	}
 }

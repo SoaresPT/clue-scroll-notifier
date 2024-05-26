@@ -23,11 +23,15 @@ public class SoundEngine {
     private boolean loadClip(Sound sound) {
         try (InputStream stream = new BufferedInputStream(FileManager.getSoundStream(sound))) {
             try (AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(stream)) {
-                clip.open(audioInputStream); // liable to error with pulseaudio, works on windows, one user informs me mac works
+                clip.open(audioInputStream);
             }
             return true;
-        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-            log.warn("Failed to load Clue Scroll Sounds sound: " + sound, e);
+        } catch (UnsupportedAudioFileException e) {
+            log.warn("Unsupported audio file: " + sound.getFileName(), e);
+        } catch (IOException e) {
+            log.warn("I/O error loading sound: " + sound.getFileName(), e);
+        } catch (LineUnavailableException e) {
+            log.warn("Line unavailable for sound: " + sound.getFileName(), e);
         }
         return false;
     }
@@ -43,7 +47,7 @@ public class SoundEngine {
                 clip = AudioSystem.getClip();
             } catch (LineUnavailableException e) {
                 lastClipMTime = CLIP_MTIME_UNLOADED;
-                log.warn("Failed to get clip for Clue Scroll Sounds sound: " + sound, e);
+                log.warn("Failed to get audio clip for sound: " + sound.getFileName(), e);
                 return;
             }
 
@@ -60,17 +64,12 @@ public class SoundEngine {
         gain = Math.max(gain, volume.getMinimum());
         volume.setValue(gain);
 
-        // From RuneLite base client Notifier class:
-        // Using loop instead of start + setFramePosition prevents the clip
-        // from not being played sometimes, presumably a race condition in the
-        // underlying line driver
+        // Using loop instead of start + setFramePosition to avoid race condition
         clip.loop(0);
     }
 
-    public void close()
-    {
-        if (clip != null && clip.isOpen())
-        {
+    public void close() {
+        if (clip != null && clip.isOpen()) {
             clip.close();
         }
     }

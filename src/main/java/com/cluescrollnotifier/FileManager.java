@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class FileManager {
 
-    private static final File DOWNLOAD_DIR = new File(RuneLite.RUNELITE_DIR.getPath() + File.separator + "clue-scroll-sounds");
+    private static final File DOWNLOAD_DIR = new File(RuneLite.RUNELITE_DIR.getPath() + File.separator + "clue-scroll-notifier");
     private static final HttpUrl RAW_GITHUB = HttpUrl.parse("https://github.com/soarespt/clue-scroll-notifier/raw/sounds/");
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

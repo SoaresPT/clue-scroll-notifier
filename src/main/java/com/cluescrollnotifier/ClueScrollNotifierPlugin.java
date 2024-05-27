@@ -3,6 +3,7 @@ package com.cluescrollnotifier;
 import com.google.inject.Provides;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.client.Notifier;
@@ -57,7 +58,15 @@ public class ClueScrollNotifierPlugin extends Plugin {
 
 	@Subscribe
 	public void onChatMessage(ChatMessage chatMessage) {
-		if (chatMessage.getMessage().toLowerCase().contains("clue scroll")) {
+		log.debug("Received chat message: {} of type {}", chatMessage.getMessage(), chatMessage.getType());
+
+		ChatMessageType type = chatMessage.getType();
+
+		if ((type == ChatMessageType.GAMEMESSAGE || type == ChatMessageType.CONSOLE || type == ChatMessageType.SPAM)
+				&& chatMessage.getMessage().toLowerCase().contains("clue scroll")) {
+
+			log.info("Received chat message: '{}' of type {}", chatMessage.getMessage(), type);
+
 			if (config.playSound()) {
 				playRandomClueScrollSound();
 			}

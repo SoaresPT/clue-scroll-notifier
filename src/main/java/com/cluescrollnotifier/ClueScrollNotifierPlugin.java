@@ -58,13 +58,10 @@ public class ClueScrollNotifierPlugin extends Plugin {
 
 	@Subscribe
 	public void onChatMessage(ChatMessage chatMessage) {
-		log.debug("Received chat message: {} of type {}", chatMessage.getMessage(), chatMessage.getType());
-
 		ChatMessageType type = chatMessage.getType();
 
-		if ((type == ChatMessageType.GAMEMESSAGE || type == ChatMessageType.CONSOLE || type == ChatMessageType.SPAM)
+		if ((type == ChatMessageType.GAMEMESSAGE || type == ChatMessageType.SPAM)
 				&& chatMessage.getMessage().toLowerCase().contains("clue scroll")) {
-
 			log.info("Received chat message: '{}' of type {}", chatMessage.getMessage(), type);
 
 			if (config.playSound()) {

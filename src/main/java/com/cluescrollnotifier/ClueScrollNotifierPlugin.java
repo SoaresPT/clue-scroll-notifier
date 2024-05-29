@@ -85,7 +85,8 @@ public class ClueScrollNotifierPlugin extends Plugin {
 	public void onItemSpawned(ItemSpawned itemSpawned) {
 		if (birdNestFallen) {
 			ClueNestTier clueTier = ClueNestTier.getTierFromItem(itemSpawned.getItem().getId());
-			if (clueTier != null) {
+			log.info("Clue Tier: {}", clueTier);
+			if (clueTier == null) {
 				log.info("Clue Spawned {}", clueTier);
 				if (config.notifyClueNests()) {
 					notify("A bird's nest with a clue has fallen out of the tree!");

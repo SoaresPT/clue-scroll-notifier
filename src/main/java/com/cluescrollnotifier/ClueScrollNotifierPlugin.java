@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemSpawned;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
@@ -41,7 +42,7 @@ public class ClueScrollNotifierPlugin extends Plugin {
 	@Inject
 	private Notifier notifier;
 
-	private boolean birdNestFallen;
+	private ClueNestTier clueTier;
 
 	@Override
 	protected void startUp() throws Exception {
@@ -75,29 +76,11 @@ public class ClueScrollNotifierPlugin extends Plugin {
 			}
 		}
 
-		if (message.contains("a bird's nest falls out of the tree")) {
+		if (type == ChatMessageType.GAMEMESSAGE && message.contains("a bird's nest falls out of the tree".toLowerCase())) {
 			log.info("Received chat message: '{}' of type {}", chatMessage.getMessage(), type);
-			birdNestFallen = true;
+			notify("Clue scroll found!");
 		}
 	}
-
-	@Subscribe
-	public void onItemSpawned(ItemSpawned itemSpawned) {
-		if (birdNestFallen) {
-			ClueNestTier clueTier = ClueNestTier.getTierFromItem(itemSpawned.getItem().getId());
-			log.info("Clue Tier: {}", clueTier);
-			if (clueTier == null) {
-				log.info("Clue Spawned {}", clueTier);
-				if (config.notifyClueNests()) {
-					notify("A bird's nest with a clue has fallen out of the tree!");
-				}
-			}
-
-			birdNestFallen = false; // Reset the flag
-		}
-	}
-
-
 
 	private void notify(String message) {
 		if (config.playSound()) {

@@ -6,14 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.ItemSpawned;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.woodcutting.config.ClueNestTier;
 import okhttp3.OkHttpClient;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
@@ -22,27 +19,19 @@ import java.util.concurrent.ThreadLocalRandom;
 @PluginDescriptor(
 		name = "Clue Scroll Notifier"
 )
-
 public class ClueScrollNotifierPlugin extends Plugin {
 	@Inject
 	private Client client;
-
 	@Inject
 	private ClueScrollNotifierConfig config;
-
 	@Inject
 	private SoundEngine soundEngine;
-
 	@Inject
 	private ScheduledExecutorService executor;
-
 	@Inject
 	private OkHttpClient okHttpClient;
-
 	@Inject
 	private Notifier notifier;
-
-	private ClueNestTier clueTier;
 
 	@Override
 	protected void startUp() throws Exception {
@@ -64,21 +53,30 @@ public class ClueScrollNotifierPlugin extends Plugin {
 		ChatMessageType type = chatMessage.getType();
 		String message = chatMessage.getMessage().toLowerCase();
 
-		if (type == ChatMessageType.GAMEMESSAGE && message.contains("Untradeable drop: Clue scroll".toLowerCase())) {
+		if (type == ChatMessageType.GAMEMESSAGE && message.contains("untradeable drop: clue scroll".toLowerCase())) {
 			if (config.notifyClueScrollDrops()) {
 				notify("Clue scroll found!");
 			}
 		}
 
-		if (type == ChatMessageType.SPAM && message.contains("You steal a clue scroll".toLowerCase())) {
+		if (type == ChatMessageType.SPAM && message.contains("you steal a clue scroll".toLowerCase())) {
 			if (config.notifyPickpockets()) {
 				notify("Clue scroll found!");
 			}
 		}
 
-		if (type == ChatMessageType.GAMEMESSAGE && message.contains("a bird's nest falls out of the tree".toLowerCase())) {
+		if (type == ChatMessageType.GAMEMESSAGE && message.contains("a bird's nest falls out of the tree")) {
 			log.info("Received chat message: '{}' of type {}", chatMessage.getMessage(), type);
-			notify("Clue scroll found!");
+			if (config.notifyClueNests()) {
+				notify("A bird's nest with a clue has fallen out of the tree!");
+			}
+		}
+
+		if (type == ChatMessageType.GAMEMESSAGE && message.contains("you catch a clue bottle".toLowerCase())) {
+			log.info("Received chat message: '{}' of type {}", chatMessage.getMessage(), type);
+			if (config.notifyFishing()) {
+				notify("You caught a clue bottle!");
+			}
 		}
 	}
 
@@ -86,7 +84,6 @@ public class ClueScrollNotifierPlugin extends Plugin {
 		if (config.playSound()) {
 			playRandomClueScrollSound();
 		}
-
 		if (config.showNotification()) {
 			notifier.notify(message);
 		}

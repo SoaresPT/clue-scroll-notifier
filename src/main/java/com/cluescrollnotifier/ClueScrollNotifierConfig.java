@@ -14,7 +14,6 @@ public interface ClueScrollNotifierConfig extends Config {
 			description = "General configuration settings",
 			position = 0
 	)
-
 	String generalSettings = "generalSettings";
 
 	@ConfigSection(
@@ -22,7 +21,6 @@ public interface ClueScrollNotifierConfig extends Config {
 			description = "Notification configuration settings",
 			position = 1
 	)
-
 	String notificationSettings = "notificationSettings";
 
 	@ConfigItem(
@@ -32,7 +30,6 @@ public interface ClueScrollNotifierConfig extends Config {
 			position = 0,
 			section = generalSettings
 	)
-
 	default boolean playSound() {
 		return true;
 	}
@@ -45,7 +42,6 @@ public interface ClueScrollNotifierConfig extends Config {
 			position = 1,
 			section = generalSettings
 	)
-
 	default int announcementVolume() {
 		return 100;
 	}
@@ -53,11 +49,10 @@ public interface ClueScrollNotifierConfig extends Config {
 	@ConfigItem(
 			keyName = "showNotification",
 			name = "Show Notification",
-			description = "Toggle to show notification on clue scroll found.",
+			description = "Toggle to send a notification on clue scroll found.",
 			position = 2,
 			section = generalSettings
 	)
-
 	default boolean showNotification() {
 		return true;
 	}
@@ -69,7 +64,6 @@ public interface ClueScrollNotifierConfig extends Config {
 			position = 0,
 			section = notificationSettings
 	)
-
 	default boolean notifyClueNests() {
 		return true;
 	}
@@ -77,11 +71,10 @@ public interface ClueScrollNotifierConfig extends Config {
 	@ConfigItem(
 			keyName = "notifyClueScrollDrops",
 			name = "Notify on Clue Scroll Drops",
-			description = "Toggle to notify on clue scroll drops.",
+			description = "Toggle to notify on clue scroll drops. Make sure Untradeable loot notifications is enabled on the game settings.",
 			position = 1,
 			section = notificationSettings
 	)
-
 	default boolean notifyClueScrollDrops() {
 		return true;
 	}
@@ -89,12 +82,22 @@ public interface ClueScrollNotifierConfig extends Config {
 	@ConfigItem(
 			keyName = "notifyPickpockets",
 			name = "Notify on Pickpockets",
-			description = "Toggle to notify on successful pickpockets.",
+			description = "Toggle to notify on pickpocketing clues.",
 			position = 2,
 			section = notificationSettings
 	)
-
 	default boolean notifyPickpockets() {
+		return true;
+	}
+
+	@ConfigItem(
+			keyName = "notifyFishing",
+			name = "Notify on Fishing",
+			description = "Toggle to notify on catching a clue bottle while fishing.",
+			position = 3,
+			section = notificationSettings
+	)
+	default boolean notifyFishing() {
 		return true;
 	}
 }

@@ -2,7 +2,7 @@
 
 This plugin sends a notification or plays a sound when a clue scroll is obtained either by pickpocketing, fishing, woodcutting, or as a drop. 
 
-To ensure it works correctly for monster drops, the in-game setting "Untradeable loot notifications" must be turned on.
+To ensure it works correctly for monster drops, the in-game setting "Untradeable loot notifications" must be turned on.\
 ![image](https://github.com/SoaresPT/clue-scroll-notifier/assets/9897471/fd6788bf-38b9-4106-8f15-48a0e6b7b55b)
 
 

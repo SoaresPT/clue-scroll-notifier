@@ -55,13 +55,13 @@ public class ClueScrollNotifierPlugin extends Plugin {
 
 		if (type == ChatMessageType.GAMEMESSAGE && message.contains("untradeable drop: clue scroll")) {
 			if (config.notifyClueScrollDrops()) {
-				notify("Clue scroll drop!");
+				notify("Got a clue scroll drop!");
 			}
 		}
 
 		if (type == ChatMessageType.SPAM && message.contains("you steal a clue scroll")) {
 			if (config.notifyPickpockets()) {
-				notify("Clue scroll pickpocket!");
+				notify("You stole a clue scroll!");
 			}
 		}
 
@@ -75,14 +75,14 @@ public class ClueScrollNotifierPlugin extends Plugin {
 		if (type == ChatMessageType.SPAM && message.contains("you catch a clue bottle")) {
 			log.info("Received chat message: '{}' of type {}", chatMessage.getMessage(), type);
 			if (config.notifyFishing()) {
-				notify("You got a clue bottle!");
+				notify("You caught a clue bottle!");
 			}
 		}
 
-		if (type == ChatMessageType.SPAM && message.contains("clue geode")) {
+		if (type == ChatMessageType.SPAM && message.contains("you find a clue geode")) {
 			log.info("Received chat message: '{}' of type {}", chatMessage.getMessage(), type);
 			if (config.notifyMining()) {
-				notify("You got a clue geode!");
+				notify("You found a clue geode!");
 			}
 		}
 	}

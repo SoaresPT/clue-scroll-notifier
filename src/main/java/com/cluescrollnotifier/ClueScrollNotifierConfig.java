@@ -104,7 +104,7 @@ public interface ClueScrollNotifierConfig extends Config {
 	@ConfigItem(
 			keyName = "notifyMining",
 			name = "Notify on Mining",
-			description = "Toggle to notify on getting a clue bottle while mining.",
+			description = "Toggle to notify on getting a clue geode while mining.",
 			position = 4,
 			section = notificationSettings
 	)

@@ -18,13 +18,13 @@ import okhttp3.OkHttpClient;
 import java.util.List;
 import java.util.Arrays;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @PluginDescriptor(
 		name = "Clue Scroll Notifier"
 )
 public class ClueScrollNotifierPlugin extends Plugin {
+
 	@Inject
 	private Client client;
 	@Inject
@@ -101,23 +101,10 @@ public class ClueScrollNotifierPlugin extends Plugin {
 
 	private void notify(String message) {
 		if (config.playSound()) {
-			playRandomClueScrollSound();
+			soundEngine.playClip();
 		}
 		if (config.showNotification()) {
 			notifier.notify(message);
-		}
-	}
-
-	private void playRandomClueScrollSound() {
-		int whichSound = ThreadLocalRandom.current().nextInt(1, 3);
-		switch (whichSound) {
-			case 2:
-				log.info("Playing CLUE2 sound.");
-				soundEngine.playClip(Sound.CLUE2);
-				break;
-			default:
-				log.info("Playing default CLUE sound.");
-				soundEngine.playClip(Sound.CLUE);
 		}
 	}
 

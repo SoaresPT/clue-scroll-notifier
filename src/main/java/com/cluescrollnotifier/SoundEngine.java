@@ -1,13 +1,12 @@
 package com.cluescrollnotifier;
 
-import lombok.extern.slf4j.Slf4j;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.sound.sampled.*;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.sound.sampled.*;
+import lombok.extern.slf4j.Slf4j;
 
 @Singleton
 @Slf4j
@@ -20,24 +19,23 @@ public class SoundEngine {
     private long lastClipMTime = CLIP_MTIME_UNLOADED;
     private Clip clip = null;
 
-    private boolean loadClip(Sound sound) {
-        try (InputStream stream = new BufferedInputStream(FileManager.getSoundStream(sound))) {
-            try (AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(stream)) {
+    private boolean loadClip() {
+        try (InputStream stream = new BufferedInputStream(FileManager.getSoundStream(Sound.CLUE))) {
+            try (AudioInputStream audioInputStream =
+                         AudioSystem.getAudioInputStream(stream)) {
                 clip.open(audioInputStream);
             }
             return true;
-        } catch (UnsupportedAudioFileException e) {
-            log.warn("Unsupported audio file: " + sound.getFileName(), e);
-        } catch (IOException e) {
-            log.warn("I/O error loading sound: " + sound.getFileName(), e);
-        } catch (LineUnavailableException e) {
-            log.warn("Line unavailable for sound: " + sound.getFileName(), e);
+        } catch (UnsupportedAudioFileException | IOException
+                 | LineUnavailableException e) {
+            log.warn("Failed to load sound file: {}", Sound.CLUE.getFileName(), e);
         }
         return false;
     }
 
-    public void playClip(Sound sound) {
+    public void playClip() {
         long currentMTime = System.currentTimeMillis();
+
         if (clip == null || currentMTime != lastClipMTime || !clip.isOpen()) {
             if (clip != null && clip.isOpen()) {
                 clip.close();
@@ -47,12 +45,12 @@ public class SoundEngine {
                 clip = AudioSystem.getClip();
             } catch (LineUnavailableException e) {
                 lastClipMTime = CLIP_MTIME_UNLOADED;
-                log.warn("Failed to get audio clip for sound: " + sound.getFileName(), e);
+                log.warn("Failed to get audio clip for sound: {}", Sound.CLUE.getFileName(), e);
                 return;
             }
 
             lastClipMTime = currentMTime;
-            if (!loadClip(sound)) {
+            if (!loadClip()) {
                 return;
             }
         }

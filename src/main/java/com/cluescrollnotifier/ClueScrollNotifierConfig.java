@@ -93,11 +93,22 @@ public interface ClueScrollNotifierConfig extends Config {
 	@ConfigItem(
 			keyName = "notifyFishing",
 			name = "Notify on Fishing",
-			description = "Toggle to notify on catching a clue bottle while fishing.",
+			description = "Toggle to notify on getting a clue bottle while fishing.",
 			position = 3,
 			section = notificationSettings
 	)
 	default boolean notifyFishing() {
+		return true;
+	}
+
+	@ConfigItem(
+			keyName = "notifyMining",
+			name = "Notify on Mining",
+			description = "Toggle to notify on getting a clue bottle while mining.",
+			position = 4,
+			section = notificationSettings
+	)
+	default boolean notifyMining() {
 		return true;
 	}
 }

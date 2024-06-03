@@ -94,7 +94,7 @@ public class ClueScrollNotifierPlugin extends Plugin {
 	@Subscribe
 	public void onItemSpawned(ItemSpawned itemSpawned) {
 		TileItem item = itemSpawned.getItem();
-		if (config.notifyClueScrollDrops() && CLUE_ITEM_IDS.contains(item.getId())) {
+		if (config.notifyClueNests() && CLUE_ITEM_IDS.contains(item.getId())) {
 			notify("A bird's nest with a clue has fallen out of the tree!");
 		}
 	}

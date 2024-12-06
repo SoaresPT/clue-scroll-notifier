@@ -126,7 +126,7 @@ public interface ClueScrollNotifierConfig extends Config {
 	@ConfigItem(
 			keyName = "notifyScrollBoxDrops",
 			name = "Notify on Scroll Box Drops",
-			description = "Toggle to notify on scroll box drops. (Leagues Only)",
+			description = "Toggle to notify on scroll box drops. (Leagues Only). Untradeable loot notifications must be turned on.",
 			position = 5,
 			section = notificationSettings
 	)

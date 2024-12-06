@@ -18,6 +18,7 @@ To ensure it works correctly for monster drops, the in-game setting "Untradeable
     - **Notify on Clue Scroll Drops:** Toggle to notify when a clue scroll drops from a monster or similar.
     - **Notify on Pickpockets:** Toggle to notify when a clue scroll is obtained via pickpocketing.
     - **Notify on Fishing:** Toggle to notify when a clue bottle is caught while fishing.
+    - **Notify on Scroll Box Drops:** Toggle to notify when a scroll box drops from a monster (Leagues only). 
 
 ## Credits
 Adapted from [https://github.com/jarrodcabalzar/CasketSounds/tree/master](https://github.com/jarrodcabalzar/CasketSounds/tree/master)

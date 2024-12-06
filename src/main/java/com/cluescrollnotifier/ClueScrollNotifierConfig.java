@@ -34,6 +34,17 @@ public interface ClueScrollNotifierConfig extends Config {
 		return true;
 	}
 
+	@ConfigItem(
+			keyName = "customSoundFile",
+			name = "Custom Sound File",
+			description = "Select a custom sound file to play for notifications",
+			position = 1,
+			section = generalSettings
+	)
+	default Sound customSoundFile() {
+		return Sound.CLUE;
+	}
+
 	@Range(min = 0, max = 200)
 	@ConfigItem(
 			keyName = "announcementVolume",
@@ -110,5 +121,16 @@ public interface ClueScrollNotifierConfig extends Config {
 	)
 	default boolean notifyMining() {
 		return true;
+	}
+
+	@ConfigItem(
+			keyName = "notifyScrollBoxDrops",
+			name = "Notify on Scroll Box Drops",
+			description = "Toggle to notify on scroll box drops. (Leagues Only)",
+			position = 5,
+			section = notificationSettings
+	)
+	default boolean notifyScrollBoxDrops() {
+		return false;
 	}
 }

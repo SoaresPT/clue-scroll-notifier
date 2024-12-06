@@ -14,8 +14,10 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import okhttp3.OkHttpClient;
 import java.util.List;
 import java.util.Arrays;
+import java.util.concurrent.ScheduledExecutorService;
 
 @Slf4j
 @PluginDescriptor(
@@ -25,13 +27,14 @@ public class ClueScrollNotifierPlugin extends Plugin {
 
 	@Inject
 	private Client client;
-
 	@Inject
 	private ClueScrollNotifierConfig config;
-
 	@Inject
 	private SoundEngine soundEngine;
-
+	@Inject
+	private ScheduledExecutorService executor;
+	@Inject
+	private OkHttpClient okHttpClient;
 	@Inject
 	private Notifier notifier;
 
@@ -45,6 +48,10 @@ public class ClueScrollNotifierPlugin extends Plugin {
 
 	@Override
 	protected void startUp() throws Exception {
+		executor.submit(() -> {
+			FileManager.ensureDownloadDirectoryExists();
+			FileManager.downloadAllMissingSounds(okHttpClient);
+		});
 		log.info("ClueScrollNotifier started!");
 	}
 
@@ -82,6 +89,12 @@ public class ClueScrollNotifierPlugin extends Plugin {
 				notify("You found a clue geode!");
 			}
 		}
+
+		if (type == ChatMessageType.GAMEMESSAGE && message.contains("untradeable drop: scroll box")) {
+			if (config.notifyScrollBoxDrops()) {
+				notify("Got a scroll box drop!");
+			}
+		}
 	}
 
 	@Subscribe
@@ -94,7 +107,7 @@ public class ClueScrollNotifierPlugin extends Plugin {
 
 	private void notify(String message) {
 		if (config.playSound()) {
-			soundEngine.playClip();
+			soundEngine.playClip(config.customSoundFile());
 		}
 		if (config.showNotification()) {
 			notifier.notify(message);

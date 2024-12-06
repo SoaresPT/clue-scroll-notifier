@@ -64,7 +64,9 @@ public abstract class FileManager {
 
         for (String filename : filesPresent) {
             File toDelete = new File(DOWNLOAD_DIR, filename);
-            toDelete.delete();
+            if (!toDelete.delete()) {
+                log.warn("Failed to delete file: {}", filename);
+            }
         }
     }
 

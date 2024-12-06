@@ -89,6 +89,12 @@ public class ClueScrollNotifierPlugin extends Plugin {
 				notify("You found a clue geode!");
 			}
 		}
+
+		if (type == ChatMessageType.GAMEMESSAGE && message.contains("untradeable drop: scroll box")) {
+			if (config.notifyClueScrollDrops()) {
+				notify("Got a clue scroll drop!");
+			}
+		}
 	}
 
 	@Subscribe
@@ -101,7 +107,7 @@ public class ClueScrollNotifierPlugin extends Plugin {
 
 	private void notify(String message) {
 		if (config.playSound()) {
-			soundEngine.playClip();
+			soundEngine.playClip(config.customSoundFile());
 		}
 		if (config.showNotification()) {
 			notifier.notify(message);

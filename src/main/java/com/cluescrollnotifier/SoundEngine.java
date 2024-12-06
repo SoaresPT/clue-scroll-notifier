@@ -19,51 +19,52 @@ public class SoundEngine {
     private long lastClipMTime = CLIP_MTIME_UNLOADED;
     private Clip clip = null;
 
-    private boolean loadClip() {
-        try (InputStream stream = new BufferedInputStream(FileManager.getSoundStream(Sound.CLUE))) {
-            try (AudioInputStream audioInputStream =
-                         AudioSystem.getAudioInputStream(stream)) {
+    private boolean loadClip(Sound sound) {
+        try (InputStream stream = new BufferedInputStream(FileManager.getSoundStream(sound))) {
+            try (AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(stream)) {
                 clip.open(audioInputStream);
             }
             return true;
-        } catch (UnsupportedAudioFileException | IOException
-                 | LineUnavailableException e) {
-            log.warn("Failed to load sound file: {}", Sound.CLUE.getFileName(), e);
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            log.warn("Failed to load sound file: {}", sound.getFileName(), e);
         }
         return false;
     }
 
-    public void playClip() {
-        long currentMTime = System.currentTimeMillis();
+    public void playClip(Sound sound) {
+        try {
+            long currentMTime = System.currentTimeMillis();
 
-        if (clip == null || currentMTime != lastClipMTime || !clip.isOpen()) {
-            if (clip != null && clip.isOpen()) {
-                clip.close();
+            if (clip == null || currentMTime != lastClipMTime || !clip.isOpen()) {
+                if (clip != null && clip.isOpen()) {
+                    clip.close();
+                }
+
+                try {
+                    clip = AudioSystem.getClip();
+                } catch (LineUnavailableException e) {
+                    lastClipMTime = CLIP_MTIME_UNLOADED;
+                    log.warn("Failed to get audio clip for sound: {}", sound.getFileName(), e);
+                    return;
+                }
+                lastClipMTime = currentMTime;
+                if (!loadClip(sound)) {
+                    return;
+                }
             }
 
-            try {
-                clip = AudioSystem.getClip();
-            } catch (LineUnavailableException e) {
-                lastClipMTime = CLIP_MTIME_UNLOADED;
-                log.warn("Failed to get audio clip for sound: {}", Sound.CLUE.getFileName(), e);
-                return;
-            }
+            // User configurable volume
+            FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            float gain = 20f * (float) Math.log10(config.announcementVolume() / 100f);
+            gain = Math.min(gain, volume.getMaximum());
+            gain = Math.max(gain, volume.getMinimum());
+            volume.setValue(gain);
 
-            lastClipMTime = currentMTime;
-            if (!loadClip()) {
-                return;
-            }
+            // Using loop instead of start + setFramePosition to avoid race condition
+            clip.loop(0);
+        } catch (Exception e) {
+            log.error("Error playing sound clip: {}", sound.getFileName(), e);
         }
-
-        // User configurable volume
-        FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-        float gain = 20f * (float) Math.log10(config.announcementVolume() / 100f);
-        gain = Math.min(gain, volume.getMaximum());
-        gain = Math.max(gain, volume.getMinimum());
-        volume.setValue(gain);
-
-        // Using loop instead of start + setFramePosition to avoid race condition
-        clip.loop(0);
     }
 
     public void close() {

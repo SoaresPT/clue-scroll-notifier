@@ -42,7 +42,7 @@ public interface ClueScrollNotifierConfig extends Config {
 			section = generalSettings
 	)
 	default Sound customSoundFile() {
-		return Sound.CLUE;
+		return Sound.CLUE1;
 	}
 
 	@Range(min = 0, max = 200)

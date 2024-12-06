@@ -40,7 +40,9 @@ public abstract class FileManager {
 
         for (Sound sound : getDesiredSoundList()) {
             String fileNameToDownload = sound.getFileName();
-            if (filesPresent.contains(fileNameToDownload)) {
+            Path outputPath = Paths.get(DOWNLOAD_DIR.getPath(), fileNameToDownload);
+
+            if (Files.exists(outputPath)) {
                 filesPresent.remove(fileNameToDownload);
                 continue;
             }
@@ -51,7 +53,6 @@ public abstract class FileManager {
             }
 
             HttpUrl soundUrl = RAW_GITHUB.newBuilder().addPathSegment(fileNameToDownload).build();
-            Path outputPath = Paths.get(DOWNLOAD_DIR.getPath(), fileNameToDownload);
             try (Response res = okHttpClient.newCall(new Request.Builder().url(soundUrl).build()).execute()) {
                 if (res.body() != null) {
                     Files.copy(new BufferedInputStream(res.body().byteStream()), outputPath, StandardCopyOption.REPLACE_EXISTING);

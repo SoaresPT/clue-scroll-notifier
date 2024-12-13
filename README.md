@@ -19,6 +19,8 @@ To ensure it works correctly for monster drops, the in-game setting "Untradeable
     - **Notify on Pickpockets:** Toggle to notify when a clue scroll is obtained via pickpocketing.
     - **Notify on Fishing:** Toggle to notify when a clue bottle is caught while fishing.
     - **Notify on Scroll Box Drops:** Toggle to notify when a scroll box drops from a monster (Leagues only). 
+- **Custom Sounds:**
+  - The sound files used by this plugin are located in your `.runelite` folder under `clue-scroll-notifier`. You can replace these files with your own custom `.wav` files as long as they match the naming convention `clue1.wav` to `clue5.wav`. Simply place your custom sound files in the folder and ensure they are named correctly.
 
 ## Credits
 Adapted from [https://github.com/jarrodcabalzar/CasketSounds/tree/master](https://github.com/jarrodcabalzar/CasketSounds/tree/master)

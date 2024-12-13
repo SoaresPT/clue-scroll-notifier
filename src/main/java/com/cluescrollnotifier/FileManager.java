@@ -2,8 +2,6 @@ package com.cluescrollnotifier;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.RuneLite;
-import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -16,26 +14,48 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.stream.Stream;
 
+@Slf4j
 public class FileManager {
-    private static final Logger log = LoggerFactory.getLogger(FileManager.class);
-    private static final Path DOWNLOAD_DIR = new File(RuneLite.RUNELITE_DIR.getPath() + File.separator + "clue-scroll-notifier").toPath();
+    private static final Path DOWNLOAD_DIR = Paths.get(RuneLite.RUNELITE_DIR.getPath(), "clue-scroll-notifier");
 
     public static void initialize() {
-        try {
-            Files.createDirectories(DOWNLOAD_DIR);
-        } catch (IOException e) {
-            log.error("Could not create download directory", e);
-            return;
-        }
-
+        createDownloadDirectory();
         Set<String> filesPresent = getFilesPresent();
         Set<String> desiredFiles = getDesiredSoundList().stream()
                 .map(Sound::getFileName)
                 .collect(Collectors.toSet());
 
+        copyMissingFiles(filesPresent, desiredFiles);
+        deleteExtraFiles(filesPresent);
+    }
+
+    private static void createDownloadDirectory() {
+        try {
+            Files.createDirectories(DOWNLOAD_DIR);
+        } catch (IOException e) {
+            log.error("Could not create download directory", e);
+        }
+    }
+
+    private static Set<String> getFilesPresent() {
+        try (Stream<Path> paths = Files.list(DOWNLOAD_DIR)) {
+            return paths
+                    .filter(Files::isRegularFile)
+                    .map(path -> path.getFileName().toString())
+                    .collect(Collectors.toSet());
+        } catch (IOException e) {
+            log.error("Error listing files in download directory", e);
+            return new HashSet<>();
+        }
+    }
+
+    private static Set<Sound> getDesiredSoundList() {
+        return Arrays.stream(Sound.values()).collect(Collectors.toSet());
+    }
+
+    private static void copyMissingFiles(Set<String> filesPresent, Set<String> desiredFiles) {
         for (String fileName : desiredFiles) {
             Path outputPath = DOWNLOAD_DIR.resolve(fileName);
             if (Files.exists(outputPath)) {
@@ -53,32 +73,19 @@ public class FileManager {
                 log.error("Clue Scroll Notifier could not copy sound: {}", fileName, e);
             }
         }
+    }
 
+    private static void deleteExtraFiles(Set<String> filesPresent) {
         for (String filename : filesPresent) {
-            File toDelete = new File(DOWNLOAD_DIR.toFile(), filename);
-            if (!toDelete.delete()) {
-                log.warn("Failed to delete file: {}", filename);
+            try {
+                Files.delete(DOWNLOAD_DIR.resolve(filename));
+            } catch (IOException e) {
+                log.warn("Failed to delete file: {}", filename, e);
             }
         }
     }
 
-    private static Set<String> getFilesPresent() {
-        File[] downloadDirFiles = DOWNLOAD_DIR.toFile().listFiles();
-        if (downloadDirFiles == null || downloadDirFiles.length == 0) {
-            return new HashSet<>();
-        }
-
-        return Arrays.stream(downloadDirFiles)
-                .filter(file -> !file.isDirectory())
-                .map(File::getName)
-                .collect(Collectors.toSet());
-    }
-
-    private static Set<Sound> getDesiredSoundList() {
-        return Arrays.stream(Sound.values()).collect(Collectors.toSet());
-    }
-
     public static InputStream getSoundStream(Sound sound) throws FileNotFoundException {
-        return new FileInputStream(new File(DOWNLOAD_DIR.toFile(), sound.getFileName()));
+        return new FileInputStream(DOWNLOAD_DIR.resolve(sound.getFileName()).toFile());
     }
 }

@@ -14,7 +14,6 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import okhttp3.OkHttpClient;
 import java.util.List;
 import java.util.Arrays;
 import java.util.concurrent.ScheduledExecutorService;
@@ -34,8 +33,6 @@ public class ClueScrollNotifierPlugin extends Plugin {
 	@Inject
 	private ScheduledExecutorService executor;
 	@Inject
-	private OkHttpClient okHttpClient;
-	@Inject
 	private Notifier notifier;
 
 	private static final List<Integer> CLUE_ITEM_IDS = Arrays.asList(
@@ -48,10 +45,7 @@ public class ClueScrollNotifierPlugin extends Plugin {
 
 	@Override
 	protected void startUp() throws Exception {
-		executor.submit(() -> {
-			FileManager.ensureDownloadDirectoryExists();
-			FileManager.downloadAllMissingSounds(okHttpClient);
-		});
+		executor.submit(FileManager::initialize);
 		log.info("ClueScrollNotifier started!");
 	}
 

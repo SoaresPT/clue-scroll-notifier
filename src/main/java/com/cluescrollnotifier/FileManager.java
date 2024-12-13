@@ -2,13 +2,6 @@ package com.cluescrollnotifier;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.RuneLite;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
-import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,72 +14,78 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
-public abstract class FileManager {
+public class FileManager {
+    private static final Path DOWNLOAD_DIR = Paths.get(RuneLite.RUNELITE_DIR.getPath(), "clue-scroll-notifier");
 
-    private static final File DOWNLOAD_DIR = new File(RuneLite.RUNELITE_DIR.getPath() + File.separator + "clue-scroll-notifier");
-    private static final HttpUrl RAW_GITHUB = HttpUrl.parse("https://github.com/soarespt/clue-scroll-notifier/raw/sounds/");
+    public static void initialize() {
+        createDownloadDirectory();
+        Set<String> filesPresent = getFilesPresent();
+        Set<String> desiredFiles = getDesiredSoundList().stream()
+                .map(Sound::getFileName)
+                .collect(Collectors.toSet());
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static void ensureDownloadDirectoryExists() {
-        if (!DOWNLOAD_DIR.exists()) {
-            DOWNLOAD_DIR.mkdirs();
-        }
+        copyMissingFiles(filesPresent, desiredFiles);
+        deleteExtraFiles(filesPresent);
     }
 
-    public static void downloadAllMissingSounds(final OkHttpClient okHttpClient) {
-        Set<String> filesPresent = getFilesPresent();
-
-        for (Sound sound : getDesiredSoundList()) {
-            String fileNameToDownload = sound.getFileName();
-            Path outputPath = Paths.get(DOWNLOAD_DIR.getPath(), fileNameToDownload);
-
-            if (Files.exists(outputPath)) {
-                filesPresent.remove(fileNameToDownload);
-                continue;
-            }
-
-            if (RAW_GITHUB == null) {
-                log.error("Clue Scroll Notifier could not download sounds due to an unexpected null RAW_GITHUB value");
-                return;
-            }
-
-            HttpUrl soundUrl = RAW_GITHUB.newBuilder().addPathSegment(fileNameToDownload).build();
-            try (Response res = okHttpClient.newCall(new Request.Builder().url(soundUrl).build()).execute()) {
-                if (res.body() != null) {
-                    Files.copy(new BufferedInputStream(res.body().byteStream()), outputPath, StandardCopyOption.REPLACE_EXISTING);
-                }
-            } catch (IOException e) {
-                log.error("Clue Scroll Notifier could not download sound: {}", fileNameToDownload, e);
-            }
-        }
-
-        for (String filename : filesPresent) {
-            File toDelete = new File(DOWNLOAD_DIR, filename);
-            if (!toDelete.delete()) {
-                log.warn("Failed to delete file: {}", filename);
-            }
+    private static void createDownloadDirectory() {
+        try {
+            Files.createDirectories(DOWNLOAD_DIR);
+        } catch (IOException e) {
+            log.error("Could not create download directory", e);
         }
     }
 
     private static Set<String> getFilesPresent() {
-        File[] downloadDirFiles = DOWNLOAD_DIR.listFiles();
-        if (downloadDirFiles == null || downloadDirFiles.length == 0) {
+        try (Stream<Path> paths = Files.list(DOWNLOAD_DIR)) {
+            return paths
+                    .filter(Files::isRegularFile)
+                    .map(path -> path.getFileName().toString())
+                    .collect(Collectors.toSet());
+        } catch (IOException e) {
+            log.error("Error listing files in download directory", e);
             return new HashSet<>();
         }
-
-        return Arrays.stream(downloadDirFiles)
-                .filter(file -> !file.isDirectory())
-                .map(File::getName)
-                .collect(Collectors.toSet());
     }
 
     private static Set<Sound> getDesiredSoundList() {
         return Arrays.stream(Sound.values()).collect(Collectors.toSet());
     }
 
+    private static void copyMissingFiles(Set<String> filesPresent, Set<String> desiredFiles) {
+        for (String fileName : desiredFiles) {
+            Path outputPath = DOWNLOAD_DIR.resolve(fileName);
+            if (Files.exists(outputPath)) {
+                filesPresent.remove(fileName);
+                continue;
+            }
+
+            try (InputStream resourceStream = FileManager.class.getResourceAsStream("/" + fileName)) {
+                if (resourceStream != null) {
+                    Files.copy(resourceStream, outputPath, StandardCopyOption.REPLACE_EXISTING);
+                } else {
+                    log.error("Clue Scroll Notifier could not find resource: {}", fileName);
+                }
+            } catch (IOException e) {
+                log.error("Clue Scroll Notifier could not copy sound: {}", fileName, e);
+            }
+        }
+    }
+
+    private static void deleteExtraFiles(Set<String> filesPresent) {
+        for (String filename : filesPresent) {
+            try {
+                Files.delete(DOWNLOAD_DIR.resolve(filename));
+            } catch (IOException e) {
+                log.warn("Failed to delete file: {}", filename, e);
+            }
+        }
+    }
+
     public static InputStream getSoundStream(Sound sound) throws FileNotFoundException {
-        return new FileInputStream(new File(DOWNLOAD_DIR, sound.getFileName()));
+        return new FileInputStream(DOWNLOAD_DIR.resolve(sound.getFileName()).toFile());
     }
 }

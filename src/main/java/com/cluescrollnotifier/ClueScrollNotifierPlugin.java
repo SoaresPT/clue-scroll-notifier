@@ -17,6 +17,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import java.util.List;
 import java.util.Arrays;
 import java.util.concurrent.ScheduledExecutorService;
+import net.runelite.client.events.ConfigChanged;
 
 @Slf4j
 @PluginDescriptor(
@@ -96,6 +97,20 @@ public class ClueScrollNotifierPlugin extends Plugin {
 		TileItem item = itemSpawned.getItem();
 		if (config.notifyClueNests() && CLUE_ITEM_IDS.contains(item.getId())) {
 			notify("A bird's nest with a clue has fallen out of the tree!");
+		}
+	}
+
+	@Subscribe
+	public void onConfigChanged(ConfigChanged event) {
+		if (!event.getGroup().equals("ClueScrollNotifier")) {
+			return;
+		}
+
+		if (event.getKey().equals("testSound")) {
+			// Play the test sound with current settings
+			if (config.playSound()) {
+				soundEngine.playClip(config.customSoundFile());
+			}
 		}
 	}
 

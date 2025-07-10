@@ -23,6 +23,14 @@ public interface ClueScrollNotifierConfig extends Config {
 	)
 	String notificationSettings = "notificationSettings";
 
+	@ConfigSection(
+			name = "Debug",
+			description = "Debug and testing options",
+			position = 2,
+			closedByDefault = true
+	)
+	String debugSettings = "debugSettings";
+
 	@ConfigItem(
 			keyName = "playSound",
 			name = "Play Sound",
@@ -131,6 +139,17 @@ public interface ClueScrollNotifierConfig extends Config {
 			section = notificationSettings
 	)
 	default boolean notifyScrollBoxDrops() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "testSound",
+			name = "Test Sound",
+			description = "Click to test the selected sound and volume",
+			position = 0,
+			section = debugSettings
+	)
+	default boolean testSound() {
 		return false;
 	}
 }

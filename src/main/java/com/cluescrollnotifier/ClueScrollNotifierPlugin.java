@@ -5,7 +5,7 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.api.TileItem;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ItemSpawned;
@@ -36,11 +36,11 @@ public class ClueScrollNotifierPlugin extends Plugin {
 	private Notifier notifier;
 
 	private static final List<Integer> CLUE_ITEM_IDS = Arrays.asList(
-			ItemID.CLUE_NEST_BEGINNER,
-			ItemID.CLUE_NEST_EASY,
-			ItemID.CLUE_NEST_MEDIUM,
-			ItemID.CLUE_NEST_HARD,
-			ItemID.CLUE_NEST_ELITE
+			ItemID.WC_CLUE_NEST_BEGINNER,
+			ItemID.WC_CLUE_NEST_EASY,
+			ItemID.WC_CLUE_NEST_MEDIUM,
+			ItemID.WC_CLUE_NEST_HARD,
+			ItemID.WC_CLUE_NEST_ELITE
 	);
 
 	@Override

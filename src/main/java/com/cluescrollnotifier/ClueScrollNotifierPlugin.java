@@ -61,7 +61,7 @@ public class ClueScrollNotifierPlugin extends Plugin {
 		ChatMessageType type = chatMessage.getType();
 		String message = chatMessage.getMessage().toLowerCase();
 
-		if type == ChatMessageType.GAMEMESSAGE && (message.contains("untradeable drop: clue scroll") || message.contains("untradeable drop: scroll box")) {
+		if (type == ChatMessageType.GAMEMESSAGE && (message.contains("untradeable drop: clue scroll") || message.contains("untradeable drop: scroll box"))) {
 			if (config.notifyClueScrollDrops()) {
 				notify("Got a clue scroll drop!");
 			}

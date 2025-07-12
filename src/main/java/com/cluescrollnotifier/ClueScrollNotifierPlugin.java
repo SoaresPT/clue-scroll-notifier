@@ -10,6 +10,7 @@ import net.runelite.api.TileItem;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ItemSpawned;
 import net.runelite.client.Notifier;
+import net.runelite.client.audio.AudioPlayer;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
@@ -52,7 +53,6 @@ public class ClueScrollNotifierPlugin extends Plugin {
 
 	@Override
 	protected void shutDown() throws Exception {
-		soundEngine.close();
 		log.info("ClueScrollNotifier stopped!");
 	}
 

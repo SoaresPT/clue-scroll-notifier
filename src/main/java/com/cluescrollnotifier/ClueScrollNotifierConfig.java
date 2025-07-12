@@ -23,6 +23,14 @@ public interface ClueScrollNotifierConfig extends Config {
 	)
 	String notificationSettings = "notificationSettings";
 
+	@ConfigSection(
+			name = "Debug",
+			description = "Debug and testing options",
+			position = 2,
+			closedByDefault = true
+	)
+	String debugSettings = "debugSettings";
+
 	@ConfigItem(
 			keyName = "playSound",
 			name = "Play Sound",
@@ -124,13 +132,13 @@ public interface ClueScrollNotifierConfig extends Config {
 	}
 
 	@ConfigItem(
-			keyName = "notifyScrollBoxDrops",
-			name = "Notify on Scroll Box Drops",
-			description = "Toggle to notify on scroll box drops. (Leagues Only). Untradeable loot notifications must be turned on.",
-			position = 5,
-			section = notificationSettings
+			keyName = "testSound",
+			name = "Test Sound",
+			description = "Click to test the selected sound and volume",
+			position = 0,
+			section = debugSettings
 	)
-	default boolean notifyScrollBoxDrops() {
+	default boolean testSound() {
 		return false;
 	}
 }

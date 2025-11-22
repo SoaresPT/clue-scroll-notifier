@@ -132,6 +132,17 @@ public interface ClueScrollNotifierConfig extends Config {
 	}
 
 	@ConfigItem(
+			keyName = "notifySalvaging",
+			name = "Notify on Salvaging",
+			description = "Toggle to notify on getting a scroll box while salvaging in Sailing.",
+			position = 5,
+			section = notificationSettings
+	)
+	default boolean notifySalvaging() {
+		return true;
+	}
+
+	@ConfigItem(
 			keyName = "testSound",
 			name = "Test Sound",
 			description = "Click to test the selected sound and volume",

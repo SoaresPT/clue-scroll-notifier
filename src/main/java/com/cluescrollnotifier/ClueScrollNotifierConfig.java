@@ -134,10 +134,10 @@ public interface ClueScrollNotifierConfig extends Config {
 	@ConfigItem(
 			keyName = "notifySalvaging",
 			name = "Notify on Salvaging",
-			description = "Toggle to notify on getting a scroll box while salvaging in Sailing.",
+			description = "Toggle to notify on getting a scroll box or clue scroll while sorting salvage.",
 			position = 5,
 			section = notificationSettings
-	)
+		)
 	default boolean notifySalvaging() {
 		return true;
 	}

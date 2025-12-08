@@ -85,9 +85,9 @@ public class ClueScrollNotifierPlugin extends Plugin {
 			}
 		}
 
-		if (type == ChatMessageType.SPAM && message.contains("you sort through the") && message.contains("salvage and find") && message.contains("scroll box")) {
+		if (type == ChatMessageType.SPAM && message.contains("you sort through the") && message.contains("salvage and find") && (message.contains("scroll box") || message.contains("clue scroll"))) {
 			if (config.notifySalvaging()) {
-				notify("You found a scroll box while salvaging!");
+				notify("You found a clue while salvaging!");
 			}
 		}
 	}
